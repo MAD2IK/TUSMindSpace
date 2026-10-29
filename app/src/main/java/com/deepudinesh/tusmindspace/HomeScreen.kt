@@ -6,57 +6,25 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 
 @Composable
 fun HomeScreen() {
-
-    val navTabs = mapOf(
-        "Home" to Icons.Default.Home,
-        "Meditate" to Icons.Default.Favorite, // Meditate placeholder
-        "Journal" to Icons.Default.Edit, // Journal placeholder
-        "Resources" to Icons.Default.LocationOn, // Resources
-        "Contact" to Icons.Default.Call // Call
-    )
-    var selectedTab by remember { mutableStateOf("Home") }
-
-    Scaffold(
-        bottomBar = {
-            NavigationBar {
-                navTabs.forEach { (label, icon) ->
-                    NavigationBarItem(
-                        selected = label == selectedTab,
-                        onClick = { selectedTab = label },
-                        icon = { ButtonIcon(icon, 24) },
-                        label = { Text(label) }
-                    )
-                }
-            }
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()), // landscape scroll prep for tablet view
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()), // landscape scroll prep for tablet view
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
             // Title
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Home", style = MaterialTheme.typography.headlineMedium)
@@ -109,7 +77,6 @@ fun HomeScreen() {
             }
         }
     }
-}
 
 @Composable
 fun ActionCard(label: String, modifier: Modifier = Modifier,icon: ImageVector) {
