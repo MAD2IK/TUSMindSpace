@@ -11,17 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.deepudinesh.tusmindspace.ui.theme.TUSMindSpaceTheme
+import com.deepudinesh.tusmindspace.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TUSMindSpaceTheme {
+            AppTheme {
                     Surface{
                         val navController = rememberNavController();
-
                         NavHost(navController, startDestination = "home")
                         {
                             composable("home") { HomeScreen() }

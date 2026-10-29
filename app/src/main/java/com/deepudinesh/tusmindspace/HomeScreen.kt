@@ -1,28 +1,49 @@
 package com.deepudinesh.tusmindspace
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 @Composable
 fun HomeScreen() {
+
+    val navTabs = mapOf(
+        "Home" to Icons.Default.Home,
+        "Meditate" to Icons.Default.Favorite, // Meditate placeholder
+        "Journal" to Icons.Default.Edit, // Journal placeholder
+        "Resources" to Icons.Default.LocationOn, // Resources
+        "Contact" to Icons.Default.Call // Call
+    )
+    var selectedTab by remember { mutableStateOf("Home") }
+
     Scaffold(
         bottomBar = {
             NavigationBar {
-                repeat(5) { index ->
+                navTabs.forEach { (label, icon) ->
                     NavigationBarItem(
-                        selected = index == 0,
-                        onClick = { },
-                        icon = { ButtonIcon(R.drawable.placeholder_img, 24) }
+                        selected = label == selectedTab,
+                        onClick = { selectedTab = label },
+                        icon = { ButtonIcon(icon, 24) },
+                        label = { Text(label) }
                     )
                 }
             }
@@ -48,7 +69,7 @@ fun HomeScreen() {
                     Modifier.padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    SolidCircleWithIcon(R.drawable.ic_launcher_foreground,56)
+                    SolidCircleWithImageVectorIcon(Icons.Default.Person,28, circleSize = 54)
                     Spacer(Modifier.width(12.dp))
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text("🔥 Streak: 4 days")
@@ -58,8 +79,8 @@ fun HomeScreen() {
 
             // Meditate & Journaling quick nav buttons on home screen
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ActionCard("Meditate", Modifier.weight(1f))
-                ActionCard("Log mood", Modifier.weight(1f))
+                ActionCard("Meditate", Modifier.weight(1f), Icons.Default.Favorite)
+                ActionCard("Log mood", Modifier.weight(1f), Icons.Default.Edit)
             }
 
             // Today's quote
@@ -91,41 +112,43 @@ fun HomeScreen() {
 }
 
 @Composable
-fun ActionCard(label: String, modifier: Modifier = Modifier) {
+fun ActionCard(label: String, modifier: Modifier = Modifier,icon: ImageVector) {
     Card(modifier) {
         Column(
             Modifier.fillMaxWidth().padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            ButtonIcon(R.drawable.placeholder_img, 24)
+            ButtonIcon(icon, 24)
             Text(label)
         }
     }
 }
 
-//Reusable button icon function
 @Composable
-fun ButtonIcon(@DrawableRes iconRes: Int, size: Int) {
+fun ButtonIcon(icon: ImageVector, iconSize: Int)
+{
     Icon(
-        painter = painterResource(iconRes),
+        imageVector = icon,
         contentDescription = null,
-        modifier = Modifier.size(size.dp)
+        modifier = Modifier.size(iconSize.dp)
     )
 }
 
 //Reusable button icon function
 @Composable
-fun SolidCircleWithIcon(@DrawableRes iconRes: Int, size: Int) {
-    Box(modifier = Modifier.size(size.dp)
-        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-        contentAlignment = Alignment.Center)
-    {
+fun SolidCircleWithImageVectorIcon(icon: ImageVector, iconSize: Int, circleSize: Int) {
+    Box(
+        modifier = Modifier
+            .size(circleSize.dp)
+            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
         Icon(
-            painter = painterResource(iconRes),
+            imageVector = icon,
             contentDescription = null,
-            modifier = Modifier.size(size.dp)
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.size(iconSize.dp)
         )
     }
-
 }
