@@ -1,9 +1,9 @@
-package com.deepudinesh.tusmindspace
+package com.deepudinesh.tusmindspace.screens
 
-import androidx.compose.foundation.background
+import com.deepudinesh.tusmindspace.components.ActionCard
+import com.deepudinesh.tusmindspace.components.SolidCircleWithImageVectorIcon
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -13,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -78,44 +77,3 @@ fun HomeScreen() {
         }
     }
 
-@Composable
-fun ActionCard(label: String, modifier: Modifier = Modifier,icon: ImageVector) {
-    Card(modifier) {
-        Column(
-            Modifier.fillMaxWidth().padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            ButtonIcon(icon, 24)
-            Text(label)
-        }
-    }
-}
-
-@Composable
-fun ButtonIcon(icon: ImageVector, iconSize: Int)
-{
-    Icon(
-        imageVector = icon,
-        contentDescription = null,
-        modifier = Modifier.size(iconSize.dp)
-    )
-}
-
-//Reusable button icon function
-@Composable
-fun SolidCircleWithImageVectorIcon(icon: ImageVector, iconSize: Int, circleSize: Int) {
-    Box(
-        modifier = Modifier
-            .size(circleSize.dp)
-            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.size(iconSize.dp)
-        )
-    }
-}

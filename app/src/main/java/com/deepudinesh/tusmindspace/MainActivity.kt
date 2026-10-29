@@ -24,6 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.deepudinesh.tusmindspace.components.ButtonIcon
+import com.deepudinesh.tusmindspace.screens.ContactScreen
+import com.deepudinesh.tusmindspace.screens.HomeScreen
+import com.deepudinesh.tusmindspace.screens.JournalScreen
+import com.deepudinesh.tusmindspace.screens.MeditateScreen
+import com.deepudinesh.tusmindspace.screens.ResourcesScreen
 import com.deepudinesh.tusmindspace.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {

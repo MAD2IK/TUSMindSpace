@@ -1,4 +1,4 @@
-package com.deepudinesh.tusmindspace
+package com.deepudinesh.tusmindspace.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
