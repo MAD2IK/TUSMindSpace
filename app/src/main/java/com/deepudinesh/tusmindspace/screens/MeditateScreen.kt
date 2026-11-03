@@ -17,6 +17,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.deepudinesh.tusmindspace.components.HistoryRow
 import com.deepudinesh.tusmindspace.components.SessionCard
 import com.deepudinesh.tusmindspace.components.ToggleablePills
 
@@ -54,5 +55,12 @@ fun MeditateScreen() {
             icon = Icons.Default.Face,
             onPlay = { }
         )
+
+        Text("History", style = MaterialTheme.typography.titleMedium)
+        Column {
+            HistoryRow("Mon", "Breathing reset", 3)
+            HistoryRow("Sun", "Exam calm", 5)
+            HistoryRow("Sat", "Body scan", 10)
+        }
     }
 }

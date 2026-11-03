@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.HorizontalDivider
 
 @Composable
 fun ActionCard(label: String, modifier: Modifier = Modifier,icon: ImageVector) {
@@ -113,4 +114,16 @@ fun EmergencyCard() {
             }
         }
     }
+}
+
+@Composable
+fun HistoryRow(day: String, title: String, mins: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text("$day · $title", style = MaterialTheme.typography.bodyMedium)
+        Text("$mins min", style = MaterialTheme.typography.bodyMedium)
+    }
+    HorizontalDivider()
 }
