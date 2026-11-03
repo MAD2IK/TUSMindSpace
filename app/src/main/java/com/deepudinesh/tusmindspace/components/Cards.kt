@@ -115,15 +115,3 @@ fun EmergencyCard() {
         }
     }
 }
-
-@Composable
-fun HistoryRow(day: String, title: String, mins: Int) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text("$day · $title", style = MaterialTheme.typography.bodyMedium)
-        Text("$mins min", style = MaterialTheme.typography.bodyMedium)
-    }
-    HorizontalDivider()
-}
