@@ -19,27 +19,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ToggleablePills(
-    options: List<Int>,
-    selected: Int,
-    onSelect: (Int) -> Unit,
-    modifier: Modifier = Modifier
+fun <T> ToggleablePills( // Made this a template so it can be reused in resources screen
+    options: List<T>,
+    selected: T,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    label: (T) -> String = { it.toString() }
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        options.forEach { minutes ->
+        options.forEach { option ->
+            val isSelected = option == selected
             FilterChip(
                 modifier = Modifier.weight(1f),
-                selected = minutes == selected,
-                onClick = { onSelect(minutes) },
+                selected = isSelected,
+                onClick = { onSelect(option) },
                 label = {
                     Text(
-                        text = "$minutes min",
+                        text = label(option),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        fontWeight = if (minutes == selected) FontWeight.Bold else FontWeight.Normal
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 },
                 colors = FilterChipDefaults.filterChipColors(

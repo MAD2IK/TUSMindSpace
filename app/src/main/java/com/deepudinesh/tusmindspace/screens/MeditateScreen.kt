@@ -34,7 +34,8 @@ fun MeditateScreen() {
         ToggleablePills(
             options = listOf(3,5,10),
             selected = selectedMins,
-            onSelect = {selectedMins = it}
+            onSelect = {selectedMins = it},
+            label = { "$it min" }
         )
 
         SessionCard(
