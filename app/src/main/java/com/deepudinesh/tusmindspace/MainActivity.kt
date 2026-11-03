@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
@@ -69,7 +72,11 @@ class MainActivity : ComponentActivity() {
                         NavHost(
                             navController,
                             startDestination = "Home",
-                            modifier = Modifier.padding(innerPadding)
+                            modifier = Modifier.padding(innerPadding),
+                            enterTransition = { fadeIn(tween(300)) },
+                            exitTransition = { fadeOut(tween(300)) },
+                            popEnterTransition = { fadeIn(tween(300)) },
+                            popExitTransition = { fadeOut(tween(300)) }
                         ) {
                             composable("Home") { HomeScreen() }
                             composable("Meditate") { MeditateScreen() }
