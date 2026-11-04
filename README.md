@@ -12,12 +12,12 @@ journaling and quick access to real support when they need it.
 |---|---|
 | Bottom navigation between 5 screens (Jetpack Compose Navigation) | Done |
 | Home screen with streak, quick actions, quote, affirmations | UI completed |
-| Meditations with session timer | WIP |
-| Mood journal (Room) | Planned |
-| Resources map (Google Maps) |  Planned |
-| Contact Us with tap-to-call | Planned |
-| Daily reminder notification | Planned |
-| Phone and tablet, portrait and landscape layouts | Planned |
+| Meditations with session timer | Meditation screen completed, timer WIP |
+| Mood journal (Room) | UI completed, functionality WIP |
+| Resources map (Google Maps) |  UI completed, functionality WIP |
+| Contact Us with tap-to-call | UI completed, functionality WIP |
+| Daily reminder notification | UI completed, functionality WIP |
+| Phone and tablet, portrait and landscape layouts | Phone layout completed, Tablet WIP |
 
 ## Setup & build
 **Requirements:** Android Studio Quail 3 | 2026.1.3 Canary 1, Android SDK, emulator or
