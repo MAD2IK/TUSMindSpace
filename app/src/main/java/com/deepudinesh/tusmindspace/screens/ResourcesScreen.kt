@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import com.deepudinesh.tusmindspace.components.EventRow
 import com.deepudinesh.tusmindspace.components.ResourcesRow
 import com.deepudinesh.tusmindspace.components.ToggleablePills
 
@@ -128,6 +129,10 @@ fun CampusEventsScreen() {
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text("Campus events placeholder")
+        EventRow("12", "NOV", "Mindfulness Drop-in", "1:00 PM · Library Room 2")
+        EventRow("14", "NOV", "Coffee & Chat", "11:00 AM · Student Centre")
+        EventRow("19", "NOV", "Exam Stress Workshop", "4:00 PM · Lecture Hall B")
+        EventRow("21", "NOV", "Movie Night", "7:00 PM · SU Common Room")
+        EventRow("27", "NOV", "Walk & Talk", "12:30 PM · Main Entrance")
     }
 }
