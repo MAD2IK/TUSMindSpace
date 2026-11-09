@@ -51,6 +51,14 @@ class MainActivity : ComponentActivity() {
                         "Contact" to Icons.Default.Call
                     )
                     var selectedTab by remember { mutableStateOf("Home") }
+                    val navigateTo: (String) -> Unit = { route ->
+                        selectedTab = route
+                        navController.navigate(route) {
+                            popUpTo("Home") { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
 
                     Scaffold(
                         bottomBar = {
@@ -58,10 +66,7 @@ class MainActivity : ComponentActivity() {
                                 navTabs.forEach { (label, icon) ->
                                     NavigationBarItem(
                                         selected = label == selectedTab,
-                                        onClick = {
-                                            selectedTab = label
-                                            navController.navigate(label)
-                                        },
+                                        onClick = { navigateTo(label) },
                                         icon = { ButtonIcon(icon, 24) },
                                         label = { Text(label) }
                                     )
@@ -78,7 +83,7 @@ class MainActivity : ComponentActivity() {
                             popEnterTransition = { fadeIn(tween(300)) },
                             popExitTransition = { fadeOut(tween(300)) }
                         ) {
-                            composable("Home") { HomeScreen() }
+                            composable("Home") { HomeScreen(onNavigate = navigateTo) }
                             composable("Meditate") { MeditateScreen() }
                             composable("Journal") { JournalScreen() }
                             composable("Resources") { ResourcesScreen() }

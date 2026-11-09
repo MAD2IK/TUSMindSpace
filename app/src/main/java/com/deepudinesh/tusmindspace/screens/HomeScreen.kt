@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onNavigate: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -46,8 +46,8 @@ fun HomeScreen() {
 
             // Meditate & Journaling quick nav buttons on home screen
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ActionCard("Meditate", Modifier.weight(1f), Icons.Default.Favorite)
-                ActionCard("Log mood", Modifier.weight(1f), Icons.Default.Edit)
+                ActionCard("Meditate", Modifier.weight(1f), Icons.Default.Favorite) { onNavigate("Meditate") }
+                ActionCard("Journal", Modifier.weight(1f), Icons.Default.Edit) { onNavigate("Journal") }
             }
 
             // Today's quote

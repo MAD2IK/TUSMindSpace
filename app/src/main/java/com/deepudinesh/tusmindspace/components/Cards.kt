@@ -22,11 +22,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.HorizontalDivider
 
 @Composable
-fun ActionCard(label: String, modifier: Modifier = Modifier,icon: ImageVector) {
-    Card(modifier) {
+fun ActionCard(
+    label: String,
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    Card(onClick = onClick, modifier = modifier) {
         Column(
             Modifier.fillMaxWidth().padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,

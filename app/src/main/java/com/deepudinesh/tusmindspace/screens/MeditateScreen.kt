@@ -31,28 +31,21 @@ fun MeditateScreen() {
     ) {
         Text("Meditations", style = MaterialTheme.typography.headlineMedium)
 
-        ToggleablePills(
-            options = listOf(3,5,10),
-            selected = selectedMins,
-            onSelect = {selectedMins = it},
-            label = { "$it min" }
-        )
-
         SessionCard(
             title = "Breathing reset",
-            subtitle = "Slow your breath",
+            subtitle = "3 min · Slow your breath",
             icon = Icons.Default.Refresh,
             onPlay = { }
         )
         SessionCard(
             title = "Exam calm",
-            subtitle = "Settle pre-exam nerves",
+            subtitle = "5 min · Settle pre-exam nerves",
             icon = Icons.Default.Star,
             onPlay = { }
         )
         SessionCard(
             title = "Body scan",
-            subtitle = "Release tension head to toe",
+            subtitle = "10 min · Release tension head to toe",
             icon = Icons.Default.Face,
             onPlay = { }
         )
