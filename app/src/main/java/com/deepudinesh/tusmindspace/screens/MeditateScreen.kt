@@ -22,9 +22,7 @@ import com.deepudinesh.tusmindspace.components.SessionCard
 import com.deepudinesh.tusmindspace.components.ToggleablePills
 
 @Composable
-fun MeditateScreen() {
-    var selectedMins by rememberSaveable { mutableIntStateOf(3) }
-
+fun MeditateScreen(onStart: (title: String, mins: Int) -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -35,19 +33,19 @@ fun MeditateScreen() {
             title = "Breathing reset",
             subtitle = "3 min · Slow your breath",
             icon = Icons.Default.Refresh,
-            onPlay = { }
+            onPlay = { onStart("Breathing reset", 3) }
         )
         SessionCard(
             title = "Exam calm",
             subtitle = "5 min · Settle pre-exam nerves",
             icon = Icons.Default.Star,
-            onPlay = { }
+            onPlay = { onStart("Exam calm", 5) }
         )
         SessionCard(
             title = "Body scan",
             subtitle = "10 min · Release tension head to toe",
             icon = Icons.Default.Face,
-            onPlay = { }
+            onPlay = { onStart("Body scan", 10) }
         )
 
         Text("History", style = MaterialTheme.typography.titleMedium)

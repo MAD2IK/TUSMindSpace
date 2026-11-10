@@ -1,5 +1,6 @@
 package com.deepudinesh.tusmindspace
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,15 +25,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.deepudinesh.tusmindspace.components.ButtonIcon
 import com.deepudinesh.tusmindspace.screens.ContactScreen
 import com.deepudinesh.tusmindspace.screens.HomeScreen
 import com.deepudinesh.tusmindspace.screens.JournalScreen
 import com.deepudinesh.tusmindspace.screens.MeditateScreen
 import com.deepudinesh.tusmindspace.screens.ResourcesScreen
+import com.deepudinesh.tusmindspace.screens.SessionTimerScreen
 import com.deepudinesh.tusmindspace.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
@@ -84,7 +88,24 @@ class MainActivity : ComponentActivity() {
                             popExitTransition = { fadeOut(tween(300)) }
                         ) {
                             composable("Home") { HomeScreen(onNavigate = navigateTo) }
-                            composable("Meditate") { MeditateScreen() }
+                            composable("Meditate") {
+                                MeditateScreen(onStart = { title, mins ->
+                                    navController.navigate("Timer/${Uri.encode(title)}/$mins")
+                                })
+                            }
+                            composable(
+                                route = "Timer/{title}/{mins}",
+                                arguments = listOf(
+                                    navArgument("title") { type = NavType.StringType },
+                                    navArgument("mins") { type = NavType.IntType }
+                                )
+                            ) { entry ->
+                                SessionTimerScreen(
+                                    title = entry.arguments?.getString("title") ?: "Session",
+                                    mins = entry.arguments?.getInt("mins") ?: 3,
+                                    onBack = { navController.popBackStack() }
+                                )
+                            }
                             composable("Journal") { JournalScreen() }
                             composable("Resources") { ResourcesScreen() }
                             composable("Contact") { ContactScreen() }
