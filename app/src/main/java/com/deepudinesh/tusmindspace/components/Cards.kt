@@ -1,6 +1,7 @@
 package com.deepudinesh.tusmindspace.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,7 +50,13 @@ import androidx.compose.material.icons.filled.WbTwilight
 import androidx.compose.material3.Button
 import androidx.compose.ui.window.Dialog
 import androidx.compose.runtime.remember
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
+import com.deepudinesh.tusmindspace.data.JournalEntry
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ActionCard(
@@ -360,6 +367,45 @@ fun StreakDialog(
                     modifier = Modifier.fillMaxWidth().height(50.dp)
                 ) { Text("Close") }
             }
+        }
+    }
+}
+
+@Composable
+fun JournalHistoryCard(entry: JournalEntry, onClick: () -> Unit) {
+    Card(
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
+    ) {
+        Column(Modifier.padding(20.dp)) {
+            Row {
+                Text(
+                    "JOURNAL",
+                    style = MaterialTheme.typography.labelLarge,
+                    letterSpacing = 3.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(entry.createdAt)),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Text(
+                "Quote journal",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(Modifier.height(16.dp))
+            Text(
+                entry.message,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

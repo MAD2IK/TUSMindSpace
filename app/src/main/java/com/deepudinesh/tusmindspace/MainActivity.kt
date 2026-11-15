@@ -38,6 +38,8 @@ import com.deepudinesh.tusmindspace.screens.CheckInScreen
 import com.deepudinesh.tusmindspace.screens.CheckInDoneScreen
 import com.deepudinesh.tusmindspace.screens.ContactScreen
 import com.deepudinesh.tusmindspace.screens.HomeScreen
+import com.deepudinesh.tusmindspace.screens.JournalEntryScreen
+import com.deepudinesh.tusmindspace.screens.JournalHistoryScreen
 import com.deepudinesh.tusmindspace.screens.JournalScreen
 import com.deepudinesh.tusmindspace.screens.MeditateScreen
 import com.deepudinesh.tusmindspace.screens.ResourcesScreen
@@ -138,7 +140,24 @@ class MainActivity : ComponentActivity() {
                                     onBack = { navController.popBackStack() }
                                 )
                             }
-                            composable("Journal") { JournalScreen() }
+                            composable("Journal") {
+                                JournalScreen(onHistory = { navController.navigate("JournalHistory") })
+                            }
+                            composable("JournalHistory") {
+                                JournalHistoryScreen(
+                                    onBack = { navController.popBackStack() },
+                                    onOpen = { id -> navController.navigate("JournalEntry/$id") }
+                                )
+                            }
+                            composable(
+                                route = "JournalEntry/{id}",
+                                arguments = listOf(navArgument("id") { type = NavType.IntType })
+                            ) { entry ->
+                                JournalEntryScreen(
+                                    entryId = entry.arguments?.getInt("id") ?: 0,
+                                    onBack = { navController.popBackStack() }
+                                )
+                            }
                             composable("Resources") { ResourcesScreen() }
                             composable("Contact") { ContactScreen() }
                         }

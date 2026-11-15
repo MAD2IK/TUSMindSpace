@@ -28,10 +28,15 @@ import com.deepudinesh.tusmindspace.viewmodels.JournalViewModel
 import java.time.LocalDate
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
+fun JournalScreen(
+    onHistory: () -> Unit,
+    viewModel: JournalViewModel = viewModel()
+) {
     val quotes by viewModel.quotes.collectAsStateWithLifecycle()
     var quoteIndex by rememberSaveable { mutableIntStateOf(LocalDate.now().dayOfYear) }
     val quote = quotes.getOrNull(quoteIndex % quotes.size.coerceAtLeast(1))
@@ -47,7 +52,9 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
             message = message,
             onMessageChange = { message = it },
             onBack = { writing = false },
-            onSave = { writing = false },
+            onSave = { viewModel.saveEntry(quote, message)
+                message = ""
+                writing = false },
             onCancel = { message = ""; writing = false }
         )
         return
@@ -57,7 +64,23 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text("Journal", style = MaterialTheme.typography.headlineMedium)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Journal",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.weight(1f)
+            )
+            FilledTonalIconButton(
+                onClick = onHistory,
+                shape = CircleShape,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = "Journal history")
+            }
+        }
 
         if (quotes.isEmpty()) {
             Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
