@@ -1,7 +1,5 @@
 package com.deepudinesh.tusmindspace.screens
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.deepudinesh.tusmindspace.components.ActionCard
 import com.deepudinesh.tusmindspace.components.SolidCircleWithImageVectorIcon
 import androidx.compose.foundation.layout.*
@@ -20,21 +18,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import java.time.LocalDate
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.deepudinesh.tusmindspace.components.QuoteCard
-import com.deepudinesh.tusmindspace.viewmodels.HomeViewModel
+import com.deepudinesh.tusmindspace.components.HistoryRow
+import com.deepudinesh.tusmindspace.components.MoodBarChart
+import com.deepudinesh.tusmindspace.components.MoodFacePicker
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(
-    onNavigate: (String) -> Unit,
-    viewModel: HomeViewModel = viewModel()
-) {
-    val quotes by viewModel.quotes.collectAsStateWithLifecycle()
-    var quoteIndex by rememberSaveable { mutableIntStateOf(LocalDate.now().dayOfYear) }
-    val quote = quotes.getOrNull(quoteIndex % quotes.size.coerceAtLeast(1))
+fun HomeScreen(onNavigate: (String) -> Unit) {
+    var selectedMood by rememberSaveable { mutableIntStateOf(0) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,10 +33,8 @@ fun HomeScreen(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Title
         Text("TUSMindSpace", style = MaterialTheme.typography.headlineMedium)
 
-        // Streak card
         Card(Modifier.fillMaxWidth()) {
             Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 SolidCircleWithImageVectorIcon(Icons.Default.Person, 28, circleSize = 54)
@@ -54,13 +43,27 @@ fun HomeScreen(
             }
         }
 
-        // Quick nav
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ActionCard("Meditate", Modifier.weight(1f), Icons.Default.Favorite) { onNavigate("Meditate") }
             ActionCard("Journal", Modifier.weight(1f), Icons.Default.Edit) { onNavigate("Journal") }
         }
 
-        // Today's quote
-        QuoteCard(quote = quote, onNext = { quoteIndex++ })
+        Text("How are you feeling today?", style = MaterialTheme.typography.titleMedium)
+        MoodFacePicker(
+            selected = selectedMood,
+            onSelect = { selectedMood = it }
+        )
+
+        Text("History", style = MaterialTheme.typography.titleMedium)
+        MoodBarChart(
+            values = listOf(
+                "Mon" to 2, "Tue" to 4, "Wed" to 1, "Thu" to 5,
+                "Fri" to 3, "Sat" to 4, "Sun" to 2
+            )
+        )
+        Column {
+            HistoryRow("Today", "Poor · deadline on Friday", onClick = { })
+            HistoryRow("Tue", "Good · good lab session", onClick = { })
+        }
     }
 }
