@@ -18,10 +18,14 @@ import com.deepudinesh.tusmindspace.components.HomeTopBar
 import com.deepudinesh.tusmindspace.components.MoodBarChart
 import android.text.format.DateFormat
 import android.text.format.DateUtils
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.deepudinesh.tusmindspace.components.StreakDialog
 import com.deepudinesh.tusmindspace.components.moodOptions
 import com.deepudinesh.tusmindspace.viewmodels.HomeViewModel
+import androidx.compose.runtime.setValue
 
 @Composable
 fun HomeScreen(
@@ -32,6 +36,11 @@ fun HomeScreen(
     val streak by viewModel.streak.collectAsStateWithLifecycle()
     val week by viewModel.week.collectAsStateWithLifecycle()
     val checkIns by viewModel.checkIns.collectAsStateWithLifecycle()
+    var showStreak by rememberSaveable { mutableStateOf(false) }
+
+    if (showStreak) {
+        StreakDialog(streak = streak, onDismiss = { showStreak = false })
+    }
 
     Column(
         modifier = Modifier
@@ -43,7 +52,7 @@ fun HomeScreen(
         HomeTopBar(
             streakDays = streak,
             onProfileClick = { },
-            onStreakClick = { }
+            onStreakClick = { showStreak = true }
         )
 
         CheckInCard(onBegin = onCheckIn)

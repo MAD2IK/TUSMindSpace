@@ -22,14 +22,8 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     val checkIns: StateFlow<List<CheckIn>> = checkInDao.getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    val streak: StateFlow<Int> = checkInDao.getAll().map { list ->
-        val days = list.map { dayNumber(it.createdAt) }.toSet()
-        val today = dayNumber(System.currentTimeMillis())
-        var day = if (today in days) today else today - 1
-        var count = 0
-        while (day in days) { count++; day-- }
-        count
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+    val streak: StateFlow<Int> = checkInDao.count()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
 
     val week: StateFlow<List<Pair<String, Int>>> = checkInDao.getAll().map { list ->
         val now = System.currentTimeMillis()

@@ -12,4 +12,7 @@ interface CheckInDao {
 
     @Query("SELECT * FROM check_ins ORDER BY createdAt DESC")
     fun getAll(): Flow<List<CheckIn>>
+
+    @Query("SELECT COUNT(*) FROM check_ins")
+    fun count(): Flow<Int>
 }
