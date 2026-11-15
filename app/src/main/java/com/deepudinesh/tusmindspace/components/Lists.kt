@@ -27,13 +27,11 @@ import androidx.compose.ui.text.font.FontWeight
 fun HistoryRow(
     day: String,
     title: String,
-    mins: Int? = null,
-    onClick: () -> Unit = {}
+    mins: Int? = null
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = mins == null, onClick = onClick)
             .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -47,11 +45,6 @@ fun HistoryRow(
         )
         if (mins != null) {
             Text("$mins min", style = MaterialTheme.typography.bodyMedium)
-        } else {
-            Icon(
-                Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Open entry"
-            )
         }
     }
     HorizontalDivider()

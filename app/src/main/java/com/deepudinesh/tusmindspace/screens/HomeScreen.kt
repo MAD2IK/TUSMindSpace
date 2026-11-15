@@ -1,34 +1,38 @@
 package com.deepudinesh.tusmindspace.screens
 
 import com.deepudinesh.tusmindspace.components.ActionCard
-import com.deepudinesh.tusmindspace.components.SolidCircleWithImageVectorIcon
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.deepudinesh.tusmindspace.components.CheckInCard
 import com.deepudinesh.tusmindspace.components.HistoryRow
 import com.deepudinesh.tusmindspace.components.HomeTopBar
 import com.deepudinesh.tusmindspace.components.MoodBarChart
-import com.deepudinesh.tusmindspace.components.MoodFacePicker
+import android.text.format.DateFormat
+import android.text.format.DateUtils
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.deepudinesh.tusmindspace.components.moodOptions
+import com.deepudinesh.tusmindspace.viewmodels.HomeViewModel
 
 @Composable
 fun HomeScreen(
     onNavigate: (String) -> Unit,
-    onCheckIn: () -> Unit
+    onCheckIn: () -> Unit,
+    viewModel: HomeViewModel = viewModel()
 ) {
+    val streak by viewModel.streak.collectAsStateWithLifecycle()
+    val week by viewModel.week.collectAsStateWithLifecycle()
+    val checkIns by viewModel.checkIns.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,7 +41,7 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         HomeTopBar(
-            streakDays = 4,
+            streakDays = streak,
             onProfileClick = { },
             onStreakClick = { }
         )
@@ -50,15 +54,21 @@ fun HomeScreen(
         }
 
         Text("History", style = MaterialTheme.typography.titleMedium)
-        MoodBarChart(
-            values = listOf(
-                "Mon" to 2, "Tue" to 4, "Wed" to 1, "Thu" to 5,
-                "Fri" to 3, "Sat" to 4, "Sun" to 2
+        if (checkIns.isEmpty()) {
+            Text(
+                "No check-ins yet",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-        )
-        Column {
-            HistoryRow("Today", "Poor · deadline on Friday", onClick = { })
-            HistoryRow("Tue", "Good · good lab session", onClick = { })
+        } else {
+            MoodBarChart(values = week)
+            Column {
+                checkIns.take(5).forEach { checkIn ->
+                    val day = if (DateUtils.isToday(checkIn.createdAt)) "Today"
+                    else DateFormat.format("EEE", checkIn.createdAt).toString()
+                    HistoryRow(day, moodOptions.find { it.value == checkIn.mood }?.label ?: "")
+                }
+            }
         }
     }
 }

@@ -27,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -42,6 +43,7 @@ import com.deepudinesh.tusmindspace.screens.MeditateScreen
 import com.deepudinesh.tusmindspace.screens.ResourcesScreen
 import com.deepudinesh.tusmindspace.screens.SessionTimerScreen
 import com.deepudinesh.tusmindspace.ui.theme.AppTheme
+import com.deepudinesh.tusmindspace.viewmodels.HomeViewModel
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -99,9 +101,12 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable("CheckIn") {
+                                val homeEntry = remember(it) { navController.getBackStackEntry("Home") }
+                                val homeViewModel: HomeViewModel = viewModel(homeEntry)
                                 CheckInScreen(
                                     onBack = { navController.popBackStack() },
                                     onDone = { mood ->
+                                        homeViewModel.logCheckIn(mood)
                                         navController.navigate("CheckInDone") {
                                             popUpTo("CheckIn") { inclusive = true }
                                         }

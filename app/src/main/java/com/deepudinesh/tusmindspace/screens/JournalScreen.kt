@@ -24,12 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.deepudinesh.tusmindspace.components.QuoteCard
-import com.deepudinesh.tusmindspace.viewmodels.HomeViewModel
+import com.deepudinesh.tusmindspace.viewmodels.JournalViewModel
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun JournalScreen(viewModel: HomeViewModel = viewModel()) {
+fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
     val quotes by viewModel.quotes.collectAsStateWithLifecycle()
     var quoteIndex by rememberSaveable { mutableIntStateOf(LocalDate.now().dayOfYear) }
     val quote = quotes.getOrNull(quoteIndex % quotes.size.coerceAtLeast(1))
