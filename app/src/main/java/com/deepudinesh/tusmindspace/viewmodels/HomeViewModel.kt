@@ -1,4 +1,4 @@
-package com.deepudinesh.tusmindspace.screens
+package com.deepudinesh.tusmindspace.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

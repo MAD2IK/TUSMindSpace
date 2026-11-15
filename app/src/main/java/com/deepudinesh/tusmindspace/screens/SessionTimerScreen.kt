@@ -1,5 +1,6 @@
 package com.deepudinesh.tusmindspace.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,9 +27,16 @@ import com.deepudinesh.tusmindspace.components.BreathPattern
 import com.deepudinesh.tusmindspace.components.BreathingCircle
 import com.deepudinesh.tusmindspace.components.breathPatterns
 import kotlinx.coroutines.delay
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.deepudinesh.tusmindspace.viewmodels.MeditateViewModel
 
 @Composable
-fun SessionTimerScreen(title: String, mins: Int, onBack: () -> Unit) {
+fun SessionTimerScreen(
+    title: String,
+    mins: Int,
+    onBack: () -> Unit,
+    viewModel: MeditateViewModel = viewModel()
+) {
     val total = mins * 60
     var elapsed by rememberSaveable { mutableIntStateOf(0) }
 
@@ -36,8 +44,15 @@ fun SessionTimerScreen(title: String, mins: Int, onBack: () -> Unit) {
         while (elapsed < total) {
             delay(1000)
             elapsed++
+            if (elapsed == total) viewModel.log(title, mins)
         }
     }
+
+    fun close() {
+        if (elapsed in 1 until total) viewModel.log(title, (elapsed+59) / 60)
+        onBack()
+    }
+    BackHandler(onBack = ::close)
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -53,7 +68,7 @@ fun SessionTimerScreen(title: String, mins: Int, onBack: () -> Unit) {
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            IconButton(onClick = onBack) {
+            IconButton(onClick = ::close) {
                 Icon(Icons.Default.Close, "Close $title")
             }
         }

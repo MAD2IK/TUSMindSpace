@@ -49,8 +49,8 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val navTabs = mapOf(
                         "Home" to Icons.Default.Home,
-                        "Meditate" to Icons.Default.Favorite,   // Meditate placeholder
-                        "Journal" to Icons.Default.Edit,        // Journal placeholder
+                        "Meditate" to Icons.Default.Favorite,
+                        "Journal" to Icons.Default.Edit,
                         "Resources" to Icons.Default.LocationOn,
                         "Contact" to Icons.Default.Call
                     )

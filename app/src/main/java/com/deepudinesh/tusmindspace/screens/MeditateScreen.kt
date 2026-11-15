@@ -6,26 +6,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CenterFocusStrong
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Face
+import android.text.format.DateFormat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.deepudinesh.tusmindspace.components.HistoryRow
 import com.deepudinesh.tusmindspace.components.SessionCard
-import com.deepudinesh.tusmindspace.components.ToggleablePills
+import com.deepudinesh.tusmindspace.viewmodels.MeditateViewModel
 
 @Composable
-fun MeditateScreen(onStart: (title: String, mins: Int) -> Unit) {
+fun MeditateScreen(
+    onStart: (title: String, mins: Int) -> Unit,
+    viewModel: MeditateViewModel = viewModel()
+) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -51,12 +51,19 @@ fun MeditateScreen(onStart: (title: String, mins: Int) -> Unit) {
             onPlay = { onStart("Focus", 10) }
         )
 
+        val history by viewModel.history.collectAsStateWithLifecycle()
         Text("History", style = MaterialTheme.typography.titleMedium)
         Column {
-            HistoryRow("Mon", "Energy", 3)
-            HistoryRow("Sun", "Creativity", 5)
-            HistoryRow("Sat", "Focus", 10)
+            if (history.isEmpty()) {
+                Text(
+                    "No sessions yet",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            history.forEach {
+                HistoryRow(DateFormat.format("EEE", it.completedAt).toString(), it.title, it.mins)
+            }
         }
-
     }
 }

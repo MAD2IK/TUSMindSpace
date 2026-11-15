@@ -24,6 +24,7 @@ import java.time.LocalDate
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.deepudinesh.tusmindspace.components.QuoteCard
+import com.deepudinesh.tusmindspace.viewmodels.HomeViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
