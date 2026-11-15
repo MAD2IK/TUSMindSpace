@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CenterFocusStrong
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,29 +33,30 @@ fun MeditateScreen(onStart: (title: String, mins: Int) -> Unit) {
         Text("Meditations", style = MaterialTheme.typography.headlineMedium)
 
         SessionCard(
-            title = "Breathing reset",
-            subtitle = "3 min · Slow your breath",
-            icon = Icons.Default.Refresh,
-            onPlay = { onStart("Breathing reset", 3) }
+            title = "Energy",
+            subtitle = "3 min · Boost your energy and increase alertness through breath",
+            icon = Icons.Default.LocalFireDepartment,
+            onPlay = { onStart("Energy", 3) }
         )
         SessionCard(
-            title = "Exam calm",
-            subtitle = "5 min · Settle pre-exam nerves",
-            icon = Icons.Default.Star,
-            onPlay = { onStart("Exam calm", 5) }
+            title = "Creativity",
+            subtitle = "5 min · Clear your mind, improve focus and creativity",
+            icon = Icons.Default.Palette,
+            onPlay = { onStart("Creativity", 5) }
         )
         SessionCard(
-            title = "Body scan",
-            subtitle = "10 min · Release tension head to toe",
-            icon = Icons.Default.Face,
-            onPlay = { onStart("Body scan", 10) }
+            title = "Focus",
+            subtitle = "10 min · Clear your mind, relax your body, and improve your focus",
+            icon = Icons.Default.CenterFocusStrong,
+            onPlay = { onStart("Focus", 10) }
         )
 
         Text("History", style = MaterialTheme.typography.titleMedium)
         Column {
-            HistoryRow("Mon", "Breathing reset", 3)
-            HistoryRow("Sun", "Exam calm", 5)
-            HistoryRow("Sat", "Body scan", 10)
+            HistoryRow("Mon", "Energy", 3)
+            HistoryRow("Sun", "Creativity", 5)
+            HistoryRow("Sat", "Focus", 10)
         }
+
     }
 }
