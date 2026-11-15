@@ -1,10 +1,12 @@
 package com.deepudinesh.tusmindspace
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -31,6 +33,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.deepudinesh.tusmindspace.components.ButtonIcon
+import com.deepudinesh.tusmindspace.screens.CheckInScreen
+import com.deepudinesh.tusmindspace.screens.CheckInDoneScreen
 import com.deepudinesh.tusmindspace.screens.ContactScreen
 import com.deepudinesh.tusmindspace.screens.HomeScreen
 import com.deepudinesh.tusmindspace.screens.JournalScreen
@@ -40,6 +44,7 @@ import com.deepudinesh.tusmindspace.screens.SessionTimerScreen
 import com.deepudinesh.tusmindspace.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -87,7 +92,29 @@ class MainActivity : ComponentActivity() {
                             popEnterTransition = { fadeIn(tween(300)) },
                             popExitTransition = { fadeOut(tween(300)) }
                         ) {
-                            composable("Home") { HomeScreen(onNavigate = navigateTo) }
+                            composable("Home") {
+                                HomeScreen(
+                                    onNavigate = navigateTo,
+                                    onCheckIn = { navController.navigate("CheckIn") }
+                                )
+                            }
+                            composable("CheckIn") {
+                                CheckInScreen(
+                                    onBack = { navController.popBackStack() },
+                                    onDone = { mood ->
+                                        navController.navigate("CheckInDone") {
+                                            popUpTo("CheckIn") { inclusive = true }
+                                        }
+                                    }
+                                )
+                            }
+                            composable("CheckInDone") {
+                                CheckInDoneScreen(
+                                    onJournal = { navigateTo("Journal") },
+                                    onMeditate = { navigateTo("Meditate") },
+                                    onHome = { navController.popBackStack() }
+                                )
+                            }
                             composable("Meditate") {
                                 MeditateScreen(onStart = { title, mins ->
                                     navController.navigate("Timer/${Uri.encode(title)}/$mins")

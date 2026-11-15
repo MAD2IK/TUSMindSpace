@@ -18,14 +18,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.deepudinesh.tusmindspace.components.CheckInCard
 import com.deepudinesh.tusmindspace.components.HistoryRow
+import com.deepudinesh.tusmindspace.components.HomeTopBar
 import com.deepudinesh.tusmindspace.components.MoodBarChart
 import com.deepudinesh.tusmindspace.components.MoodFacePicker
 
 @Composable
-fun HomeScreen(onNavigate: (String) -> Unit) {
-    var selectedMood by rememberSaveable { mutableIntStateOf(0) }
-
+fun HomeScreen(
+    onNavigate: (String) -> Unit,
+    onCheckIn: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -33,26 +36,18 @@ fun HomeScreen(onNavigate: (String) -> Unit) {
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text("TUSMindSpace", style = MaterialTheme.typography.headlineMedium)
+        HomeTopBar(
+            streakDays = 4,
+            onProfileClick = { },
+            onStreakClick = { }
+        )
 
-        Card(Modifier.fillMaxWidth()) {
-            Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                SolidCircleWithImageVectorIcon(Icons.Default.Person, 28, circleSize = 54)
-                Spacer(Modifier.width(12.dp))
-                Text("🔥 Streak: 4 days")
-            }
-        }
+        CheckInCard(onBegin = onCheckIn)
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ActionCard("Meditate", Modifier.weight(1f), Icons.Default.Favorite) { onNavigate("Meditate") }
             ActionCard("Journal", Modifier.weight(1f), Icons.Default.Edit) { onNavigate("Journal") }
         }
-
-        Text("How are you feeling today?", style = MaterialTheme.typography.titleMedium)
-        MoodFacePicker(
-            selected = selectedMood,
-            onSelect = { selectedMood = it }
-        )
 
         Text("History", style = MaterialTheme.typography.titleMedium)
         MoodBarChart(
