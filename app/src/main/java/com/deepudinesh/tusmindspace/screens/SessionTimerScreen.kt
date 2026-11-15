@@ -22,7 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.deepudinesh.tusmindspace.components.BreathPattern
 import com.deepudinesh.tusmindspace.components.BreathingCircle
+import com.deepudinesh.tusmindspace.components.breathPatterns
 import kotlinx.coroutines.delay
 
 @Composable
@@ -56,7 +58,11 @@ fun SessionTimerScreen(title: String, mins: Int, onBack: () -> Unit) {
             }
         }
         Spacer(Modifier.weight(0.3f))
-        BreathingCircle(running = elapsed < total, modifier = Modifier.fillMaxWidth(0.85f))
+        BreathingCircle(
+            running = elapsed < total,
+            modifier = Modifier.fillMaxWidth(0.85f),
+            pattern = breathPatterns[title] ?: BreathPattern()
+        )
         Spacer(Modifier.weight(1f))
     }
 }
