@@ -19,7 +19,6 @@ private val defaultQuotes = listOf(
     Quote(text = "Rest is not idleness.", author = "John Lubbock"),
     Quote(text = "What you think, you become.", author = "Buddha"),
     Quote(text = "Be gentle with yourself. You're doing the best you can.", author = "Unknown"),
-    Quote(text = "Feelings are just visitors. Let them come and go.", author = "Mooji")
 )
 
 class JournalViewModel(app: Application) : AndroidViewModel(app) {

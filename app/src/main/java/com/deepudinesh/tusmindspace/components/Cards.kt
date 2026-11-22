@@ -349,14 +349,14 @@ fun StreakDialog(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    if (streak == 1) "check-in streak" else "check-ins streak",
+                    if (streak == 1) "day streak" else "days streak",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    if (streak == 0) "Complete a check-in to start your streak"
-                    else "Keep checking in to grow it",
+                    if (streak == 0) "Check in today to start your streak"
+                    else "Check in tomorrow to keep it going",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center

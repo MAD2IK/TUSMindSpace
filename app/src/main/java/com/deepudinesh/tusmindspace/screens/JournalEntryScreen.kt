@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.deepudinesh.tusmindspace.viewmodels.JournalViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun JournalEntryScreen(
@@ -91,7 +92,7 @@ fun JournalEntryScreen(
                 .padding(top = 24.dp)
         ) {
             Text(
-                SimpleDateFormat("d MMM yyyy, HH:mm", Locale.getDefault())
+                SimpleDateFormat("d MMM yyyy, HH:mm", LocalLocale.current.platformLocale)
                     .format(Date(current.createdAt)).uppercase(),
                 style = MaterialTheme.typography.labelLarge,
                 letterSpacing = 3.sp,
