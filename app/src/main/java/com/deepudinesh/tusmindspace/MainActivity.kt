@@ -42,6 +42,7 @@ import com.deepudinesh.tusmindspace.screens.JournalEntryScreen
 import com.deepudinesh.tusmindspace.screens.JournalHistoryScreen
 import com.deepudinesh.tusmindspace.screens.JournalScreen
 import com.deepudinesh.tusmindspace.screens.MeditateScreen
+import com.deepudinesh.tusmindspace.screens.ProfileScreen
 import com.deepudinesh.tusmindspace.screens.ResourcesScreen
 import com.deepudinesh.tusmindspace.screens.SessionTimerScreen
 import com.deepudinesh.tusmindspace.ui.theme.AppTheme
@@ -103,7 +104,8 @@ class MainActivity : ComponentActivity() {
                             composable("Home") {
                                 HomeScreen(
                                     onNavigate = navigateTo,
-                                    onCheckIn = { navController.navigate("CheckIn") }
+                                    onCheckIn = { navController.navigate("CheckIn") },
+                                    onProfile = { navController.navigate("Profile") }
                                 )
                             }
                             composable("CheckIn") {
@@ -164,6 +166,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("Resources") { ResourcesScreen() }
                             composable("Contact") { ContactScreen() }
+                            composable("Profile") {
+                                ProfileScreen(onBack = { navController.popBackStack() })
+                            }
                         }
                     }
                 }
