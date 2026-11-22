@@ -1,5 +1,6 @@
 package com.deepudinesh.tusmindspace.screens
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,12 +34,44 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.deepudinesh.tusmindspace.components.ContactInfoCard
 import com.deepudinesh.tusmindspace.components.EmergencyCard
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+
+private const val SUPPORT_PHONE = "+35312345678"
+private const val SUPPORT_EMAIL = "wellbeing@tus.ie"
+
+private fun Context.launch(intent: Intent) {
+    try {
+        startActivity(intent)
+    } catch (e: ActivityNotFoundException) {
+        Toast.makeText(this, "No app found to handle this", Toast.LENGTH_SHORT).show()
+    }
+}
+
+private fun Context.dial(number: String) =
+    launch(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number")))
+
+private fun Context.sms(number: String, body: String = "") =
+    launch(Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$number")).apply {
+        putExtra("sms_body", body)
+    })
+
+private fun Context.email(to: String, subject: String = "", body: String = "") =
+    launch(Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).apply {
+        putExtra(Intent.EXTRA_EMAIL, arrayOf(to))
+        putExtra(Intent.EXTRA_SUBJECT, subject)
+        putExtra(Intent.EXTRA_TEXT, body)
+    })
 
 @Composable
 fun ContactScreen() {
-    var name = "Test"
-    var email = "k00290679@student.tus.ie"
-    var message by rememberSaveable { mutableStateOf("")}
+    val context = LocalContext.current
+    var name by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var message by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier.fillMaxSize().imePadding(),
@@ -55,11 +88,16 @@ fun ContactScreen() {
         {
             Text("Contact Us", style = MaterialTheme.typography.headlineMedium)
 
-            EmergencyCard()
+            EmergencyCard(
+                onCall = { context.dial("112") },
+                onText = { context.sms("50808", "HELLO") }
+            )
 
-            ContactInfoCard(Icons.Default.Email, "Email", "wellbeing@tus.ie")
-            ContactInfoCard(Icons.Default.Phone, "Phone", "+353 1 234 5678")
-            ContactInfoCard(Icons.Default.LocationOn, "Visit Us", "Student Services, TUS Campus")
+            ContactInfoCard(Icons.Default.Email, "Email", SUPPORT_EMAIL) { context.email(SUPPORT_EMAIL) }
+            ContactInfoCard(Icons.Default.Phone, "Phone", "+353 1 234 5678") { context.dial(SUPPORT_PHONE) }
+            ContactInfoCard(Icons.Default.LocationOn, "Visit Us", "Student Services, TUS Campus") {
+                context.launch(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=TUS Moylish Campus Limerick")))
+            }
 
             Spacer(Modifier.height(8.dp))
             Text("Send us a message", style = MaterialTheme.typography.titleMedium)
@@ -90,7 +128,14 @@ fun ContactScreen() {
             )
 
             Button(
-                onClick = { },
+                onClick = {
+                    context.email(
+                        to = SUPPORT_EMAIL,
+                        subject = "TUSMindSpace message from $name",
+                        body = "$message\n\nFrom: $name ($email)"
+                    )
+                },
+                enabled = name.isNotBlank() && message.isNotBlank(),
                 modifier = Modifier.fillMaxWidth().height(50.dp)
             ) {
                 Icon(Icons.Default.Send, null)

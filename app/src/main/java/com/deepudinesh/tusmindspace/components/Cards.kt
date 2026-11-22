@@ -54,8 +54,12 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
@@ -116,8 +120,9 @@ fun SessionCard(
 }
 
 @Composable
-fun ContactInfoCard(icon: ImageVector, title: String, value: String) {
+fun ContactInfoCard(icon: ImageVector, title: String, value: String, onClick: () -> Unit) {
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
@@ -136,29 +141,51 @@ fun ContactInfoCard(icon: ImageVector, title: String, value: String) {
 }
 
 @Composable
-fun EmergencyCard() {
+fun EmergencyCard(onCall: () -> Unit, onText: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(Icons.Default.Warning, null, tint = MaterialTheme.colorScheme.onErrorContainer)
-            Spacer(Modifier.width(16.dp))
-            Column {
-                Text(
-                    "In crisis? Get help now",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onErrorContainer
-                )
-                Text(
-                    "Call 112 / 999 or text 50808",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onErrorContainer
-                )
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Warning, null, tint = MaterialTheme.colorScheme.onErrorContainer)
+                Spacer(Modifier.width(16.dp))
+                Column {
+                    Text(
+                        "In crisis? Get help now",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                    Text(
+                        "Call 112 / 999 or text 50808",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = onCall,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    )
+                ) {
+                    Icon(Icons.Default.Phone, null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Call 112")
+                }
+                OutlinedButton(
+                    onClick = onText,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.Sms, null, tint = MaterialTheme.colorScheme.onErrorContainer)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Text 50808", color = MaterialTheme.colorScheme.onErrorContainer)
+                }
             }
         }
     }
