@@ -46,12 +46,16 @@ import com.deepudinesh.tusmindspace.screens.ResourcesScreen
 import com.deepudinesh.tusmindspace.screens.SessionTimerScreen
 import com.deepudinesh.tusmindspace.ui.theme.AppTheme
 import com.deepudinesh.tusmindspace.viewmodels.HomeViewModel
+import org.osmdroid.config.Configuration
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        Configuration.getInstance().load(this, getSharedPreferences("osmdroid", MODE_PRIVATE))
+        Configuration.getInstance().userAgentValue = packageName
+
         setContent {
             AppTheme {
                 Surface {
