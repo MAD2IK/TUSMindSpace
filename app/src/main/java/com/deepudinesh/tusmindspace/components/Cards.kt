@@ -489,3 +489,20 @@ fun ReminderDialog(
         }
     )
 }
+
+@Composable
+fun CampusMapCard(pins: List<MapPin>, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    Card(
+        modifier = modifier.fillMaxWidth().height(220.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        OsmMap(
+            center = TUS_MOYLISH,
+            modifier = Modifier.fillMaxSize(),
+            pins = pins,
+            onPinClick = { openInMaps(context, it.point.latitude, it.point.longitude, it.title) }
+        )
+    }
+}

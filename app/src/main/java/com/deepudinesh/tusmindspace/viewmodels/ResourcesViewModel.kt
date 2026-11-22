@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.deepudinesh.tusmindspace.data.CampusEvent
+import com.deepudinesh.tusmindspace.data.CampusService
 import com.deepudinesh.tusmindspace.data.TUSMindSpaceDatabase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,15 +26,36 @@ private val defaultEvents = listOf(
     CampusEvent(title = "Walk & Talk", startMillis = at(2026, Calendar.NOVEMBER, 27, 12, 30), location = "Main Entrance", lat = 52.6738, lon = -8.6497)
 )
 
+private val defaultServices = listOf(
+    CampusService(
+        title = "Student Counselling",
+        subtitle = "Free & confidential · Mon–Fri 9–5",
+        icon = "counselling",
+        lat = 52.6748,
+        lon = -8.6495
+    ),
+    CampusService(title = "Student Health Centre", subtitle = "Nurse & GP appointments", icon = "health", lat = 52.6744, lon = -8.6483),
+    CampusService(title = "Disability & Access Office", subtitle = "Learning supports & accommodations", icon = "access", lat = 52.6751, lon = -8.6490),
+    CampusService(title = "Students' Union Welfare", subtitle = "Peer support & advocacy", icon = "su", lat = 52.6742, lon = -8.6494),
+    CampusService(title = "Academic Support", subtitle = "Study skills & writing help", icon = "academic", lat = null, lon = null),
+    CampusService(title = "Crisis Support", subtitle = "Samaritans 116 123 · Text 50808", icon = "crisis", lat = null, lon = null)
+)
+
 class ResourcesViewModel(app: Application) : AndroidViewModel(app) {
-    private val dao = TUSMindSpaceDatabase.getDatabase(app).campusEventDao()
+    private val db = TUSMindSpaceDatabase.getDatabase(app)
+    private val dao = db.campusEventDao()
+    private val serviceDao = db.campusServiceDao()
 
     val events: StateFlow<List<CampusEvent>> = dao.getAll()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val services: StateFlow<List<CampusService>> = serviceDao.getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
         viewModelScope.launch {
             if (dao.count() == 0) dao.insertAll(defaultEvents)
+            if (serviceDao.count() == 0) serviceDao.insertAll(defaultServices)
         }
     }
 }

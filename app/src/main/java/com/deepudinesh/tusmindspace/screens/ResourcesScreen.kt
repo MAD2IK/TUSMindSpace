@@ -3,22 +3,9 @@ package com.deepudinesh.tusmindspace.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Accessible
-import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Psychology
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.SelfImprovement
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,15 +17,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.deepudinesh.tusmindspace.components.EventRow
 import com.deepudinesh.tusmindspace.components.MapPin
-import com.deepudinesh.tusmindspace.components.OsmMap
 import com.deepudinesh.tusmindspace.components.ResourcesRow
 import com.deepudinesh.tusmindspace.components.ToggleablePills
 import org.osmdroid.util.GeoPoint
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.deepudinesh.tusmindspace.components.CampusMapCard
+import com.deepudinesh.tusmindspace.components.openInMaps
+import com.deepudinesh.tusmindspace.components.serviceIcon
 import com.deepudinesh.tusmindspace.viewmodels.ResourcesViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -68,86 +58,57 @@ fun ResourcesScreen() {
 }
 
 @Composable
-fun ServicesScreen() {
+fun ServicesScreen(viewModel: ResourcesViewModel = viewModel()) {
+    val services by viewModel.services.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val pins = remember(services) {
+        services.mapNotNull { s ->
+            if (s.lat != null && s.lon != null) MapPin(GeoPoint(s.lat, s.lon), s.title, s.subtitle) else null
+        }
+    }
+
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
-        ) {
-            OsmMap(
-                center = GeoPoint(52.6745, -8.6490), // TUS Moylish (approx.) — swap for your campus
-                modifier = Modifier.fillMaxSize(),
-                pins = listOf(MapPin(GeoPoint(52.6745, -8.6490), "Student Counselling"))
+        CampusMapCard(pins)
+        services.forEach { s ->
+            ResourcesRow(
+                icon = serviceIcon(s.icon),
+                title = s.title,
+                subtitle = s.subtitle,
+                onClick = {
+                    if (s.lat != null && s.lon != null) openInMaps(context, s.lat, s.lon, s.title)
+                }
             )
         }
-
-        ResourcesRow(
-            icon = Icons.Filled.Psychology,
-            title = "Student Counselling",
-            subtitle = "Free & confidential · Mon–Fri 9–5"
-        )
-        ResourcesRow(
-            icon = Icons.Filled.LocalHospital,
-            title = "Student Health Centre",
-            subtitle = "Nurse & GP appointments"
-        )
-        ResourcesRow(
-            icon = Icons.Filled.Accessible,
-            title = "Disability & Access Office",
-            subtitle = "Learning supports & accommodations"
-        )
-        ResourcesRow(
-            icon = Icons.Filled.SelfImprovement,
-            title = "Chaplaincy",
-            subtitle = "Pastoral care for all beliefs"
-        )
-        ResourcesRow(
-            icon = Icons.Filled.Groups,
-            title = "Students' Union Welfare",
-            subtitle = "Peer support & advocacy"
-        )
-        ResourcesRow(
-            icon = Icons.Filled.School,
-            title = "Academic Support",
-            subtitle = "Study skills & writing help"
-        )
-        ResourcesRow(
-            icon = Icons.Filled.Phone,
-            title = "Crisis Support",
-            subtitle = "Samaritans 116 123 · Text 50808"
-        )
-
-
     }
 }
 
 @Composable
 fun CampusEventsScreen(viewModel: ResourcesViewModel = viewModel()) {
     val events by viewModel.events.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     val dayFmt = remember { SimpleDateFormat("dd", Locale.getDefault()) }
     val monthFmt = remember { SimpleDateFormat("MMM", Locale.getDefault()) }
     val timeFmt = remember { SimpleDateFormat("h:mm a", Locale.getDefault()) }
+    val pins = remember(events) {
+        events.map { MapPin(GeoPoint(it.lat, it.lon), it.title, it.location) }
+    }
 
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        items(events, key = { it.id }) { event ->
-            val date = Date(event.startMillis)
-            EventRow(
-                day = dayFmt.format(date),
-                month = monthFmt.format(date).uppercase(),
-                title = event.title,
-                details = "${timeFmt.format(date)} · ${event.location}"
-            )
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        CampusMapCard(pins)
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            items(events, key = { it.id }) { event ->
+                val date = Date(event.startMillis)
+                EventRow(
+                    day = dayFmt.format(date),
+                    month = monthFmt.format(date).uppercase(),
+                    title = event.title,
+                    details = "${timeFmt.format(date)} · ${event.location}",
+                    onClick = { openInMaps(context, event.lat, event.lon, event.title) }
+                )
+            }
         }
     }
 }
