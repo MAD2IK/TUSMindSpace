@@ -34,6 +34,15 @@ import com.deepudinesh.tusmindspace.components.OsmMap
 import com.deepudinesh.tusmindspace.components.ResourcesRow
 import com.deepudinesh.tusmindspace.components.ToggleablePills
 import org.osmdroid.util.GeoPoint
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.deepudinesh.tusmindspace.viewmodels.ResourcesViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ResourcesScreen() {
@@ -124,14 +133,21 @@ fun ServicesScreen() {
 }
 
 @Composable
-fun CampusEventsScreen() {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        EventRow("12", "NOV", "Mindfulness Drop-in", "1:00 PM · Library Room 2")
-        EventRow("14", "NOV", "Coffee & Chat", "11:00 AM · Student Centre")
-        EventRow("19", "NOV", "Exam Stress Workshop", "4:00 PM · Lecture Hall B")
-        EventRow("21", "NOV", "Movie Night", "7:00 PM · SU Common Room")
-        EventRow("27", "NOV", "Walk & Talk", "12:30 PM · Main Entrance")
+fun CampusEventsScreen(viewModel: ResourcesViewModel = viewModel()) {
+    val events by viewModel.events.collectAsStateWithLifecycle()
+    val dayFmt = remember { SimpleDateFormat("dd", Locale.getDefault()) }
+    val monthFmt = remember { SimpleDateFormat("MMM", Locale.getDefault()) }
+    val timeFmt = remember { SimpleDateFormat("h:mm a", Locale.getDefault()) }
+
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        items(events, key = { it.id }) { event ->
+            val date = Date(event.startMillis)
+            EventRow(
+                day = dayFmt.format(date),
+                month = monthFmt.format(date).uppercase(),
+                title = event.title,
+                details = "${timeFmt.format(date)} · ${event.location}"
+            )
+        }
     }
 }

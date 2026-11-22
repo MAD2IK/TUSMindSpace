@@ -6,8 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [Quote::class, MeditationSession::class, CheckIn::class, JournalEntry::class],
-    version = 5,
+    entities = [Quote::class, MeditationSession::class, CheckIn::class, JournalEntry::class, CampusEvent::class],
+    version = 6,
     exportSchema = false
 )
 abstract class TUSMindSpaceDatabase : RoomDatabase() {
@@ -15,6 +15,7 @@ abstract class TUSMindSpaceDatabase : RoomDatabase() {
     abstract fun meditationSessionDao(): MeditationSessionDao
     abstract fun checkInDao(): CheckInDao
     abstract fun journalEntryDao(): JournalEntryDao
+    abstract fun campusEventDao(): CampusEventDao
     companion object {
         @Volatile
         private var Instance: TUSMindSpaceDatabase? = null
