@@ -27,7 +27,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.deepudinesh.tusmindspace.data.ProfilePrefs
+import com.deepudinesh.tusmindspace.screens.LoginScreen
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -61,6 +65,9 @@ class MainActivity : ComponentActivity() {
             AppTheme {
                 Surface {
                     val navController = rememberNavController()
+                    val context = LocalContext.current
+                    val startRoute = remember { if (ProfilePrefs.isSignedIn(context)) "Home" else "Login" }
+                    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
                     val navTabs = mapOf(
                         "Home" to Icons.Default.Home,
                         "Meditate" to Icons.Default.Favorite,
@@ -80,27 +87,36 @@ class MainActivity : ComponentActivity() {
 
                     Scaffold(
                         bottomBar = {
-                            NavigationBar {
-                                navTabs.forEach { (label, icon) ->
-                                    NavigationBarItem(
-                                        selected = label == selectedTab,
-                                        onClick = { navigateTo(label) },
-                                        icon = { ButtonIcon(icon, 24) },
-                                        label = { Text(label) }
-                                    )
+                            if (currentRoute != "Login") {
+                                NavigationBar {
+                                    navTabs.forEach { (label, icon) ->
+                                        NavigationBarItem(
+                                            selected = label == selectedTab,
+                                            onClick = { navigateTo(label) },
+                                            icon = { ButtonIcon(icon, 24) },
+                                            label = { Text(label) }
+                                        )
+                                    }
                                 }
                             }
                         }
                     ) { innerPadding ->
                         NavHost(
                             navController,
-                            startDestination = "Home",
+                            startDestination = startRoute,
                             modifier = Modifier.padding(innerPadding),
                             enterTransition = { fadeIn(tween(300)) },
                             exitTransition = { fadeOut(tween(300)) },
                             popEnterTransition = { fadeIn(tween(300)) },
                             popExitTransition = { fadeOut(tween(300)) }
                         ) {
+                            composable("Login") {
+                                LoginScreen(onContinue = {
+                                    navController.navigate("Home") {
+                                        popUpTo("Login") { inclusive = true }
+                                    }
+                                })
+                            }
                             composable("Home") {
                                 HomeScreen(
                                     onNavigate = navigateTo,

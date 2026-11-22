@@ -11,12 +11,18 @@ object ProfilePrefs {
     fun name(context: Context) = prefs(context).getString("name", "") ?: ""
     fun course(context: Context) = prefs(context).getString("course", "") ?: ""
     fun year(context: Context) = prefs(context).getString("year", "") ?: ""
-
     fun save(context: Context, name: String, course: String, year: String) {
         prefs(context).edit()
             .putString("name", name)
             .putString("course", course)
             .putString("year", year)
+            .apply()
+    }
+    fun isSignedIn(context: Context) = prefs(context).getBoolean("signed_in", false)
+    fun signIn(context: Context, name: String) {
+        prefs(context).edit()
+            .putBoolean("signed_in", true)
+            .putString("name", name)
             .apply()
     }
 }
