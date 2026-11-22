@@ -26,6 +26,13 @@ import com.deepudinesh.tusmindspace.components.StreakDialog
 import com.deepudinesh.tusmindspace.components.moodOptions
 import com.deepudinesh.tusmindspace.viewmodels.HomeViewModel
 import androidx.compose.runtime.setValue
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import com.deepudinesh.tusmindspace.components.ReminderDialog
+import com.deepudinesh.tusmindspace.notifications.ReminderScheduler
 
 @Composable
 fun HomeScreen(
@@ -37,6 +44,28 @@ fun HomeScreen(
     val week by viewModel.week.collectAsStateWithLifecycle()
     val checkIns by viewModel.checkIns.collectAsStateWithLifecycle()
     var showStreak by rememberSaveable { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    var showReminder by rememberSaveable { mutableStateOf(false) }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { }
+
+    if (showReminder) {
+        ReminderDialog(
+            enabled = ReminderScheduler.isEnabled(context),
+            hour = ReminderScheduler.hour(context),
+            minute = ReminderScheduler.minute(context),
+            onSave = { on, hour, minute ->
+                ReminderScheduler.save(context, on, hour, minute)
+                if (on && Build.VERSION.SDK_INT >= 33) {
+                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                showReminder = false
+            },
+            onDismiss = { showReminder = false }
+        )
+    }
 
     if (showStreak) {
         StreakDialog(streak = streak, onDismiss = { showStreak = false })
@@ -51,7 +80,7 @@ fun HomeScreen(
     ) {
         HomeTopBar(
             streakDays = streak,
-            onProfileClick = { },
+            onProfileClick = { showReminder = true },
             onStreakClick = { showStreak = true }
         )
 

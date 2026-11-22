@@ -33,17 +33,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import com.deepudinesh.tusmindspace.data.Quote
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FormatQuote
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.WbTwilight
@@ -57,6 +53,19 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Switch
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun ActionCard(
@@ -388,7 +397,7 @@ fun JournalHistoryCard(entry: JournalEntry, onClick: () -> Unit) {
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(entry.createdAt)),
+                    SimpleDateFormat("HH:mm", LocalLocale.current.platformLocale).format(Date(entry.createdAt)),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -408,4 +417,48 @@ fun JournalHistoryCard(entry: JournalEntry, onClick: () -> Unit) {
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ReminderDialog(
+    enabled: Boolean,
+    hour: Int,
+    minute: Int,
+    onSave: (Boolean, Int, Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var on by remember { mutableStateOf(enabled) }
+    val state = rememberTimePickerState(
+        initialHour = hour,
+        initialMinute = minute,
+        is24Hour = android.text.format.DateFormat.is24HourFormat(LocalContext.current)
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = { Icon(Icons.Default.Notifications, contentDescription = null) },
+        title = { Text("Daily reminder") },
+        text = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Remind me to check in", modifier = Modifier.weight(1f))
+                    Switch(checked = on, onCheckedChange = { on = it })
+                }
+                if (on) {
+                    Spacer(Modifier.height(16.dp))
+                    TimeInput(state = state)
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave(on, state.hour, state.minute) }) { Text("Save") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
 }
