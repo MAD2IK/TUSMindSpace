@@ -38,6 +38,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.deepudinesh.tusmindspace.components.ButtonIcon
+import com.deepudinesh.tusmindspace.data.AuthManager
 import com.deepudinesh.tusmindspace.screens.CheckInScreen
 import com.deepudinesh.tusmindspace.screens.CheckInDoneScreen
 import com.deepudinesh.tusmindspace.screens.ContactScreen
@@ -66,7 +67,9 @@ class MainActivity : ComponentActivity() {
                 Surface {
                     val navController = rememberNavController()
                     val context = LocalContext.current
-                    val startRoute = remember { if (ProfilePrefs.isSignedIn(context)) "Home" else "Login" }
+                    val startRoute = remember {
+                        if (ProfilePrefs.isSignedIn(context) && AuthManager.isSignedIn()) "Home" else "Login"
+                    }
                     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
                     val navTabs = mapOf(
                         "Home" to Icons.Default.Home,

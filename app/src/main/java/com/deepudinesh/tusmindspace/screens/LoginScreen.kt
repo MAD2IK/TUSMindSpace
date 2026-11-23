@@ -31,12 +31,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.deepudinesh.tusmindspace.components.SolidCircleWithImageVectorIcon
 import com.deepudinesh.tusmindspace.data.ProfilePrefs
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
+import com.deepudinesh.tusmindspace.data.AuthManager
 
 @Composable
 fun LoginScreen(onContinue: () -> Unit) {
     val context = LocalContext.current
     var name by rememberSaveable { mutableStateOf("") }
     var accepted by rememberSaveable { mutableStateOf(false) }
+    var loading by rememberSaveable { mutableStateOf(false) }
+    var error by rememberSaveable { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -86,13 +91,27 @@ fun LoginScreen(onContinue: () -> Unit) {
 
         Button(
             onClick = {
-                ProfilePrefs.signIn(context, name.trim())
-                onContinue()
+                loading = true
+                error = null
+                AuthManager.signInAnonymously { success, message ->
+                    loading = false
+                    if (success) {
+                        ProfilePrefs.signIn(context, name.trim())
+                        onContinue()
+                    } else {
+                        error = message ?: "Couldn't sign in. Check your connection."
+                    }
+                }
             },
-            enabled = accepted,
+            enabled = accepted && !loading,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Continue anonymously")
+            if (loading) CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+            else Text("Continue anonymously")
+        }
+
+        error?.let {
+            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
         }
 
         Text(

@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.deepudinesh.tusmindspace.components.ReminderDialog
 import com.deepudinesh.tusmindspace.components.ResourcesRow
 import com.deepudinesh.tusmindspace.components.SolidCircleWithImageVectorIcon
+import com.deepudinesh.tusmindspace.data.AuthManager
 import com.deepudinesh.tusmindspace.data.ProfilePrefs
 import com.deepudinesh.tusmindspace.notifications.ReminderScheduler
 
@@ -101,6 +102,13 @@ fun ProfileScreen(onBack: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            AuthManager.uid()?.let { uid ->
+                Text(
+                    "ID: ${uid.take(8)}…",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
         Text("Your details", style = MaterialTheme.typography.titleMedium)
