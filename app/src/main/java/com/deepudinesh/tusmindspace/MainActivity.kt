@@ -45,6 +45,7 @@ import com.deepudinesh.tusmindspace.screens.ContactScreen
 import com.deepudinesh.tusmindspace.screens.HomeScreen
 import com.deepudinesh.tusmindspace.screens.JournalEntryScreen
 import com.deepudinesh.tusmindspace.screens.JournalHistoryScreen
+import com.deepudinesh.tusmindspace.screens.JournalIntroScreen
 import com.deepudinesh.tusmindspace.screens.JournalScreen
 import com.deepudinesh.tusmindspace.screens.MeditateScreen
 import com.deepudinesh.tusmindspace.screens.ProfileScreen
@@ -142,16 +143,19 @@ class MainActivity : ComponentActivity() {
                             composable("CheckIn") {
                                 val homeEntry = remember(it) { navController.getBackStackEntry("Home") }
                                 val homeViewModel: HomeViewModel = viewModel(homeEntry)
-                                CheckInScreen(
-                                    onBack = { navController.popBackStack() },
-                                    onDone = { mood ->
-                                        homeViewModel.logCheckIn(mood)
-                                        navController.navigate("CheckInDone") {
-                                            popUpTo("CheckIn") { inclusive = true }
+                                composable("CheckIn") {
+                                    val homeEntry = remember(it) { navController.getBackStackEntry("Home") }
+                                    val homeViewModel: HomeViewModel = viewModel(homeEntry)
+                                    CheckInScreen(
+                                        onBack = { navController.popBackStack() },
+                                        onDone = { mood ->
+                                            homeViewModel.logCheckIn(mood)
+                                            navController.navigate("CheckInDone") {
+                                                popUpTo("CheckIn") { inclusive = true }
+                                            }
                                         }
-                                    }
-                                )
-                            }
+                                    )
+                                }
                             composable("CheckInDone") {
                                 CheckInDoneScreen(
                                     onJournal = { navigateTo("Journal") },
@@ -178,7 +182,12 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable("Journal") {
-                                JournalScreen(onHistory = { navController.navigate("JournalHistory") })
+                                var introSeen by remember { mutableStateOf(ProfilePrefs.journalIntroSeen(context)) }
+                                if (introSeen) {
+                                    JournalScreen(onHistory = { navController.navigate("JournalHistory") })
+                                } else {
+                                    JournalIntroScreen(onFinish = { introSeen = true })
+                                }
                             }
                             composable("JournalHistory") {
                                 JournalHistoryScreen(

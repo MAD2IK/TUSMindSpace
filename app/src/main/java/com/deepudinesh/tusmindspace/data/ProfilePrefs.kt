@@ -25,9 +25,16 @@ object ProfilePrefs {
             .putString("name", name)
             .apply()
     }
+
     fun tutorialSeen(context: Context) = prefs(context).getBoolean("tutorial_seen", false)
 
     fun setTutorialSeen(context: Context) {
         prefs(context).edit().putBoolean("tutorial_seen", true).apply()
+    }
+
+    fun journalIntroSeen(context: Context) = prefs(context).getBoolean("journal_intro_seen", false)
+
+    fun setJournalIntroSeen(context: Context) {
+        prefs(context).edit().putBoolean("journal_intro_seen", true).apply()
     }
 }
