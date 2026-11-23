@@ -50,6 +50,7 @@ import com.deepudinesh.tusmindspace.screens.MeditateScreen
 import com.deepudinesh.tusmindspace.screens.ProfileScreen
 import com.deepudinesh.tusmindspace.screens.ResourcesScreen
 import com.deepudinesh.tusmindspace.screens.SessionTimerScreen
+import com.deepudinesh.tusmindspace.screens.TutorialScreen
 import com.deepudinesh.tusmindspace.ui.theme.AppTheme
 import com.deepudinesh.tusmindspace.viewmodels.HomeViewModel
 import org.osmdroid.config.Configuration
@@ -68,7 +69,11 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val context = LocalContext.current
                     val startRoute = remember {
-                        if (ProfilePrefs.isSignedIn(context) && AuthManager.isSignedIn()) "Home" else "Login"
+                        when {
+                            !ProfilePrefs.tutorialSeen(context) -> "Tutorial"
+                            !(ProfilePrefs.isSignedIn(context) && AuthManager.isSignedIn()) -> "Login"
+                            else -> "Home"
+                        }
                     }
                     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
                     val navTabs = mapOf(
@@ -90,7 +95,7 @@ class MainActivity : ComponentActivity() {
 
                     Scaffold(
                         bottomBar = {
-                            if (currentRoute != "Login") {
+                            if (currentRoute != "Login" && currentRoute != "Tutorial") {
                                 NavigationBar {
                                     navTabs.forEach { (label, icon) ->
                                         NavigationBarItem(
@@ -113,6 +118,13 @@ class MainActivity : ComponentActivity() {
                             popEnterTransition = { fadeIn(tween(300)) },
                             popExitTransition = { fadeOut(tween(300)) }
                         ) {
+                            composable("Tutorial") {
+                                TutorialScreen(onFinish = {
+                                    navController.navigate("Login") {
+                                        popUpTo("Tutorial") { inclusive = true }
+                                    }
+                                })
+                            }
                             composable("Login") {
                                 LoginScreen(onContinue = {
                                     navController.navigate("Home") {

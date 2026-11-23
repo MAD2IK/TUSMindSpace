@@ -25,4 +25,9 @@ object ProfilePrefs {
             .putString("name", name)
             .apply()
     }
+    fun tutorialSeen(context: Context) = prefs(context).getBoolean("tutorial_seen", false)
+
+    fun setTutorialSeen(context: Context) {
+        prefs(context).edit().putBoolean("tutorial_seen", true).apply()
+    }
 }
