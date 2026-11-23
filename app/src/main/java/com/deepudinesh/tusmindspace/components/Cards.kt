@@ -491,10 +491,10 @@ fun ReminderDialog(
 }
 
 @Composable
-fun CampusMapCard(pins: List<MapPin>, modifier: Modifier = Modifier) {
+fun CampusMapCard(pins: List<MapPin>, modifier: Modifier = Modifier.height(220.dp)) {
     val context = LocalContext.current
     Card(
-        modifier = modifier.fillMaxWidth().height(220.dp),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {

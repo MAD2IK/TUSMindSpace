@@ -10,6 +10,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
@@ -19,6 +21,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,6 +42,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.deepudinesh.tusmindspace.components.ButtonIcon
+import com.deepudinesh.tusmindspace.components.ReadableWidth
+import com.deepudinesh.tusmindspace.components.isWideScreen
 import com.deepudinesh.tusmindspace.data.AuthManager
 import com.deepudinesh.tusmindspace.screens.CheckInScreen
 import com.deepudinesh.tusmindspace.screens.CheckInDoneScreen
@@ -76,7 +82,8 @@ class MainActivity : ComponentActivity() {
                             else -> "Home"
                         }
                     }
-                    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+                    val currentRoute =
+                        navController.currentBackStackEntryAsState().value?.destination?.route
                     val navTabs = mapOf(
                         "Home" to Icons.Default.Home,
                         "Meditate" to Icons.Default.Favorite,
@@ -93,10 +100,12 @@ class MainActivity : ComponentActivity() {
                             restoreState = true
                         }
                     }
+                    val showNav = currentRoute != "Login" && currentRoute != "Tutorial"
+                    val wide = isWideScreen()
 
                     Scaffold(
                         bottomBar = {
-                            if (currentRoute != "Login" && currentRoute != "Tutorial") {
+                            if (showNav && !wide) {
                                 NavigationBar {
                                     navTabs.forEach { (label, icon) ->
                                         NavigationBarItem(
@@ -110,104 +119,140 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     ) { innerPadding ->
-                        NavHost(
-                            navController,
-                            startDestination = startRoute,
-                            modifier = Modifier.padding(innerPadding),
-                            enterTransition = { fadeIn(tween(300)) },
-                            exitTransition = { fadeOut(tween(300)) },
-                            popEnterTransition = { fadeIn(tween(300)) },
-                            popExitTransition = { fadeOut(tween(300)) }
-                        ) {
-                            composable("Tutorial") {
-                                TutorialScreen(onFinish = {
-                                    navController.navigate("Login") {
-                                        popUpTo("Tutorial") { inclusive = true }
+                        Row(Modifier.fillMaxSize().padding(innerPadding)) {
+                            if (showNav && wide) {
+                                NavigationRail {
+                                    navTabs.forEach { (label, icon) ->
+                                        NavigationRailItem(
+                                            selected = label == selectedTab,
+                                            onClick = { navigateTo(label) },
+                                            icon = { ButtonIcon(icon, 24) },
+                                            label = { Text(label) }
+                                        )
                                     }
-                                })
+                                }
                             }
-                            composable("Login") {
-                                LoginScreen(onContinue = {
-                                    navController.navigate("Home") {
-                                        popUpTo("Login") { inclusive = true }
-                                    }
-                                })
-                            }
-                            composable("Home") {
-                                HomeScreen(
-                                    onNavigate = navigateTo,
-                                    onCheckIn = { navController.navigate("CheckIn") },
-                                    onProfile = { navController.navigate("Profile") }
-                                )
-                            }
-                            composable("CheckIn") {
-                                val homeEntry = remember(it) { navController.getBackStackEntry("Home") }
-                                val homeViewModel: HomeViewModel = viewModel(homeEntry)
-                                composable("CheckIn") {
-                                    val homeEntry = remember(it) { navController.getBackStackEntry("Home") }
-                                    val homeViewModel: HomeViewModel = viewModel(homeEntry)
-                                    CheckInScreen(
-                                        onBack = { navController.popBackStack() },
-                                        onDone = { mood ->
-                                            homeViewModel.logCheckIn(mood)
-                                            navController.navigate("CheckInDone") {
-                                                popUpTo("CheckIn") { inclusive = true }
+                            NavHost(
+                                navController,
+                                startDestination = startRoute,
+                                modifier = Modifier.weight(1f),
+                                enterTransition = { fadeIn(tween(300)) },
+                                exitTransition = { fadeOut(tween(300)) },
+                                popEnterTransition = { fadeIn(tween(300)) },
+                                popExitTransition = { fadeOut(tween(300)) }
+                            ) {
+                                composable("Tutorial") {
+                                    ReadableWidth {
+                                        TutorialScreen(onFinish = {
+                                            navController.navigate("Login") {
+                                                popUpTo("Tutorial") { inclusive = true }
                                             }
-                                        }
+                                        })
+                                    }
+                                }
+                                composable("Login") {
+                                    ReadableWidth {
+                                        LoginScreen(onContinue = {
+                                            navController.navigate("Home") {
+                                                popUpTo("Login") { inclusive = true }
+                                            }
+                                        })
+                                    }
+                                }
+                                composable("Home") {
+                                    HomeScreen(
+                                        onNavigate = navigateTo,
+                                        onCheckIn = { navController.navigate("CheckIn") },
+                                        onProfile = { navController.navigate("Profile") }
                                     )
                                 }
-                            composable("CheckInDone") {
-                                CheckInDoneScreen(
-                                    onJournal = { navigateTo("Journal") },
-                                    onMeditate = { navigateTo("Meditate") },
-                                    onHome = { navController.popBackStack() }
-                                )
-                            }
-                            composable("Meditate") {
-                                MeditateScreen(onStart = { title, mins ->
-                                    navController.navigate("Timer/${Uri.encode(title)}/$mins")
-                                })
-                            }
-                            composable(
-                                route = "Timer/{title}/{mins}",
-                                arguments = listOf(
-                                    navArgument("title") { type = NavType.StringType },
-                                    navArgument("mins") { type = NavType.IntType }
-                                )
-                            ) { entry ->
-                                SessionTimerScreen(
-                                    title = entry.arguments?.getString("title") ?: "Session",
-                                    mins = entry.arguments?.getInt("mins") ?: 3,
-                                    onBack = { navController.popBackStack() }
-                                )
-                            }
-                            composable("Journal") {
-                                var introSeen by remember { mutableStateOf(ProfilePrefs.journalIntroSeen(context)) }
-                                if (introSeen) {
-                                    JournalScreen(onHistory = { navController.navigate("JournalHistory") })
-                                } else {
-                                    JournalIntroScreen(onFinish = { introSeen = true })
+                                composable("CheckIn") {
+                                    val homeEntry =
+                                        remember(it) { navController.getBackStackEntry("Home") }
+                                    val homeViewModel: HomeViewModel = viewModel(homeEntry)
+                                    ReadableWidth {
+                                        CheckInScreen(
+                                            onBack = { navController.popBackStack() },
+                                            onDone = { mood ->
+                                                homeViewModel.logCheckIn(mood)
+                                                navController.navigate("CheckInDone") {
+                                                    popUpTo("CheckIn") { inclusive = true }
+                                                }
+                                            }
+                                        )
+                                    }
                                 }
-                            }
-                            composable("JournalHistory") {
-                                JournalHistoryScreen(
-                                    onBack = { navController.popBackStack() },
-                                    onOpen = { id -> navController.navigate("JournalEntry/$id") }
-                                )
-                            }
-                            composable(
-                                route = "JournalEntry/{id}",
-                                arguments = listOf(navArgument("id") { type = NavType.IntType })
-                            ) { entry ->
-                                JournalEntryScreen(
-                                    entryId = entry.arguments?.getInt("id") ?: 0,
-                                    onBack = { navController.popBackStack() }
-                                )
-                            }
-                            composable("Resources") { ResourcesScreen() }
-                            composable("Contact") { ContactScreen() }
-                            composable("Profile") {
-                                ProfileScreen(onBack = { navController.popBackStack() })
+                                composable("CheckInDone") {
+                                    ReadableWidth {
+                                        CheckInDoneScreen(
+                                            onJournal = { navigateTo("Journal") },
+                                            onMeditate = { navigateTo("Meditate") },
+                                            onHome = { navController.popBackStack() }
+                                        )
+                                    }
+                                }
+                                composable("Meditate") {
+                                    ReadableWidth {
+                                        MeditateScreen(onStart = { title, mins ->
+                                            navController.navigate("Timer/${Uri.encode(title)}/$mins")
+                                        })
+                                    }
+                                }
+                                composable(
+                                    route = "Timer/{title}/{mins}",
+                                    arguments = listOf(
+                                        navArgument("title") { type = NavType.StringType },
+                                        navArgument("mins") { type = NavType.IntType }
+                                    )
+                                ) { entry ->
+                                    ReadableWidth {
+                                        SessionTimerScreen(
+                                            title = entry.arguments?.getString("title") ?: "Session",
+                                            mins = entry.arguments?.getInt("mins") ?: 3,
+                                            onBack = { navController.popBackStack() }
+                                        )
+                                    }
+                                }
+                                composable("Journal") {
+                                    var introSeen by remember {
+                                        mutableStateOf(
+                                            ProfilePrefs.journalIntroSeen(
+                                                context
+                                            )
+                                        )
+                                    }
+                                    ReadableWidth {
+                                        if (introSeen) {
+                                            JournalScreen(onHistory = { navController.navigate("JournalHistory") })
+                                        } else {
+                                            JournalIntroScreen(onFinish = { introSeen = true })
+                                        }
+                                    }
+                                }
+                                composable("JournalHistory") {
+                                    ReadableWidth {
+                                        JournalHistoryScreen(
+                                            onBack = { navController.popBackStack() },
+                                            onOpen = { id -> navController.navigate("JournalEntry/$id") }
+                                        )
+                                    }
+                                }
+                                composable(
+                                    route = "JournalEntry/{id}",
+                                    arguments = listOf(navArgument("id") { type = NavType.IntType })
+                                ) { entry ->
+                                    ReadableWidth {
+                                        JournalEntryScreen(
+                                            entryId = entry.arguments?.getInt("id") ?: 0,
+                                            onBack = { navController.popBackStack() }
+                                        )
+                                    }
+                                }
+                                composable("Resources") { ResourcesScreen() }
+                                composable("Contact") { ReadableWidth { ContactScreen() } }
+                                composable("Profile") {
+                                    ReadableWidth { ProfileScreen(onBack = { navController.popBackStack() }) }
+                                }
                             }
                         }
                     }

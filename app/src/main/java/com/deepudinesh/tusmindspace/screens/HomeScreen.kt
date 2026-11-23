@@ -26,6 +26,7 @@ import com.deepudinesh.tusmindspace.components.StreakDialog
 import com.deepudinesh.tusmindspace.components.moodOptions
 import com.deepudinesh.tusmindspace.viewmodels.HomeViewModel
 import androidx.compose.runtime.setValue
+import com.deepudinesh.tusmindspace.components.isWideScreen
 
 @Composable
 fun HomeScreen(
@@ -43,26 +44,22 @@ fun HomeScreen(
         StreakDialog(streak = streak, onDismiss = { showStreak = false })
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
+    val wide = isWideScreen()
+
+    val actions: @Composable ColumnScope.() -> Unit = {
         HomeTopBar(
             streakDays = streak,
             onProfileClick = onProfile,
             onStreakClick = { showStreak = true }
         )
-
         CheckInCard(onBegin = onCheckIn)
-
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ActionCard("Meditate", Modifier.weight(1f), Icons.Default.Favorite) { onNavigate("Meditate") }
             ActionCard("Journal", Modifier.weight(1f), Icons.Default.Edit) { onNavigate("Journal") }
         }
+    }
 
+    val history: @Composable ColumnScope.() -> Unit = {
         Text("History", style = MaterialTheme.typography.titleMedium)
         if (checkIns.isEmpty()) {
             Text(
@@ -79,6 +76,32 @@ fun HomeScreen(
                     HistoryRow(day, moodOptions.find { it.value == checkIn.mood }?.label ?: "")
                 }
             }
+        }
+    }
+
+    if (wide) {
+        Row(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            Column(
+                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                content = actions
+            )
+            Column(
+                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                content = history
+            )
+        }
+    } else {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            actions()
+            history()
         }
     }
 }

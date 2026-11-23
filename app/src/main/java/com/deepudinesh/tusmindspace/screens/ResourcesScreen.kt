@@ -33,6 +33,9 @@ import com.deepudinesh.tusmindspace.viewmodels.ResourcesViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import com.deepudinesh.tusmindspace.components.isWideScreen
 
 @Composable
 fun ResourcesScreen() {
@@ -61,17 +64,14 @@ fun ResourcesScreen() {
 fun ServicesScreen(viewModel: ResourcesViewModel = viewModel()) {
     val services by viewModel.services.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val wide = isWideScreen()
     val pins = remember(services) {
         services.mapNotNull { s ->
             if (s.lat != null && s.lon != null) MapPin(GeoPoint(s.lat, s.lon), s.title, s.subtitle) else null
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        CampusMapCard(pins)
+    val list: @Composable () -> Unit = {
         services.forEach { s ->
             ResourcesRow(
                 icon = serviceIcon(s.icon),
@@ -83,12 +83,31 @@ fun ServicesScreen(viewModel: ResourcesViewModel = viewModel()) {
             )
         }
     }
+
+    if (wide) {
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            CampusMapCard(pins, Modifier.weight(1f).fillMaxHeight())
+            Column(
+                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) { list() }
+        }
+    } else {
+        Column(
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            CampusMapCard(pins)
+            list()
+        }
+    }
 }
 
 @Composable
 fun CampusEventsScreen(viewModel: ResourcesViewModel = viewModel()) {
     val events by viewModel.events.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val wide = isWideScreen()
     val dayFmt = remember { SimpleDateFormat("dd", Locale.getDefault()) }
     val monthFmt = remember { SimpleDateFormat("MMM", Locale.getDefault()) }
     val timeFmt = remember { SimpleDateFormat("h:mm a", Locale.getDefault()) }
@@ -96,9 +115,8 @@ fun CampusEventsScreen(viewModel: ResourcesViewModel = viewModel()) {
         events.map { MapPin(GeoPoint(it.lat, it.lon), it.title, it.location) }
     }
 
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        CampusMapCard(pins)
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    val list: @Composable (Modifier) -> Unit = { modifier ->
+        LazyColumn(modifier = modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
             items(events, key = { it.id }) { event ->
                 val date = Date(event.startMillis)
                 EventRow(
@@ -109,6 +127,18 @@ fun CampusEventsScreen(viewModel: ResourcesViewModel = viewModel()) {
                     onClick = { openInMaps(context, event.lat, event.lon, event.title) }
                 )
             }
+        }
+    }
+
+    if (wide) {
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            CampusMapCard(pins, Modifier.weight(1f).fillMaxHeight())
+            list(Modifier.weight(1f))
+        }
+    } else {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            CampusMapCard(pins)
+            list(Modifier)
         }
     }
 }
